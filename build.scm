@@ -21,37 +21,37 @@
     ;; dependency graph, this list will need to be kept up to date
     ;; when new modules are added to the engine.
     (define substratic-modules
-      '("substratic/sdl2"
+      '("github.com/substratic/sdl2"
 
         ;; Core modules
-        "substratic/engine/rpc"
-        "substratic/engine/loop"
-        "substratic/engine/node"
-        "substratic/engine/string"
-        "substratic/engine/alist"
-        "substratic/engine/state"
-        "substratic/engine/assets"
-        "substratic/engine/engine"
-        "substratic/engine/events"
-        "substratic/engine/config"
-        "substratic/engine/tile-map"
-        "substratic/engine/tile-set"
-        "substratic/engine/keyboard"
-        "substratic/engine/renderer"
-        "substratic/engine/collision"
-        "substratic/engine/transform"
-        "substratic/engine/components"
+        "github.com/substratic/engine/rpc"
+        "github.com/substratic/engine/loop"
+        "github.com/substratic/engine/node"
+        "github.com/substratic/engine/string"
+        "github.com/substratic/engine/alist"
+        "github.com/substratic/engine/state"
+        "github.com/substratic/engine/assets"
+        "github.com/substratic/engine/engine"
+        "github.com/substratic/engine/events"
+        "github.com/substratic/engine/config"
+        "github.com/substratic/engine/tile-map"
+        "github.com/substratic/engine/tile-set"
+        "github.com/substratic/engine/keyboard"
+        "github.com/substratic/engine/renderer"
+        "github.com/substratic/engine/collision"
+        "github.com/substratic/engine/transform"
+        "github.com/substratic/engine/components"
 
         ;; Components
-        "substratic/engine/components/fps"
-        "substratic/engine/components/sprite"
-        "substratic/engine/components/collider"
-        "substratic/engine/components/messages"
-        "substratic/engine/components/movement"
-        "substratic/engine/components/position"
-        "substratic/engine/components/animation"
-        "substratic/engine/components/component"
-        "substratic/engine/components/controller"))
+        "github.com/substratic/engine/components/fps"
+        "github.com/substratic/engine/components/sprite"
+        "github.com/substratic/engine/components/collider"
+        "github.com/substratic/engine/components/messages"
+        "github.com/substratic/engine/components/movement"
+        "github.com/substratic/engine/components/position"
+        "github.com/substratic/engine/components/animation"
+        "github.com/substratic/engine/components/component"
+        "github.com/substratic/engine/components/controller"))
 
     (define is-macos? (equal? (cadr (system-type)) 'apple))
 
@@ -115,7 +115,7 @@
               test-files))))
 
     (define (gsc-command project #!key (gambit-path "./gambit")
-                                       (userlib-path "./lib/gambit")
+                                       (userlib-path "./lib")
                                        (debug #f))
       (string-join
         (list
@@ -139,7 +139,7 @@
        delimiter: ""))
 
     (define (build-project project #!key (gambit-path "./gambit")
-                                         (userlib-path "./lib/gambit")
+                                         (userlib-path "./lib")
                                          (debug #f))
       (println "\nBuilding for \033[1;32m" current-target "\033[0m\n")
       ;; TODO: Create the output path if it doesn't exist
