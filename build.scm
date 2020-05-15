@@ -34,6 +34,7 @@
         "github.com/substratic/engine/engine"
         "github.com/substratic/engine/events"
         "github.com/substratic/engine/config"
+        "github.com/substratic/engine/logging"
         "github.com/substratic/engine/tile-map"
         "github.com/substratic/engine/tile-set"
         "github.com/substratic/engine/keyboard"
