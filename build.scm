@@ -31,9 +31,11 @@
         "github.com/substratic/engine/alist"
         "github.com/substratic/engine/state"
         "github.com/substratic/engine/assets"
+        "github.com/substratic/engine/config"
+        "github.com/substratic/engine/easing"
         "github.com/substratic/engine/engine"
         "github.com/substratic/engine/events"
-        "github.com/substratic/engine/config"
+        "github.com/substratic/engine/macros"
         "github.com/substratic/engine/logging"
         "github.com/substratic/engine/tile-map"
         "github.com/substratic/engine/tile-set"
@@ -45,6 +47,7 @@
 
         ;; Components
         "github.com/substratic/engine/components/fps"
+        "github.com/substratic/engine/components/fade"
         "github.com/substratic/engine/components/sprite"
         "github.com/substratic/engine/components/collider"
         "github.com/substratic/engine/components/messages"
