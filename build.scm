@@ -151,9 +151,12 @@
                                         userlib-path: userlib-path
                                         debug: debug)))
         (println "Executing build command:\n\n" build-command "\n\n")
-        (shell-command build-command)))
-        ;; (when (equal? current-target 'MingW)
-        ;;   (gather-dependency-libs deft-agent))))
+        (shell-command build-command)
+        (cond
+         ((equal? current-target 'MingW)
+          (gather-win-dependencies project))
+         ((equal? current-target 'MacOS)
+          (gather-mac-dependencies project)))))
 
     (define (test-project project)
       (for-each (lambda (test-file) (load test-file))
@@ -164,9 +167,10 @@
       (for-each (lambda (file) (load file))
                 (resolve-files project 'run)))
 
-    (define (gather-dependency-libs project)
-      ;; TODO: Fix me
-      (let* ((deps (shell-command "ldd ./dist/deft-agent.exe" #t))
+    (define (gather-win-dependencies project)
+      (let* ((output-path (resolve-output-path project))
+             (exe-path (path-expand (project-ref project 'exe-name) output-path))
+             (deps (shell-command (string-append "ldd " exe-path #t)))
              (deps-to-copy (fold (lambda (dep deps-to-copy)
                                    (let ((lib-path (caddr (string-split dep #\space))))
                                      (if (string-starts-with? lib-path "/mingw64/bin/")
@@ -176,6 +180,11 @@
                                  (string-split (cdr deps) #\newline))))
         (for-each (lambda (dep-path)
                     (println "Copying dependency: " dep-path)
-                    (copy-file (path-normalize (string-append "c:/msys64" dep-path)
-                                (path-normalize (string-append "./dist/" (path-strip-directory dep-path))))))
-                  deps-to-copy)))))
+                    (copy-file (path-normalize (string-append "c:/msys64" dep-path))
+                               (path-normalize (string-append output-path
+                                                              (path-strip-directory dep-path)))))
+                  deps-to-copy)))
+
+    (define (gather-mac-dependencies project)
+      ;; TODO: Fix me
+      #f)))
