@@ -93,10 +93,9 @@
 
     (define current-target
       (cond
-       ;; TODO: What's the code for Windows?
        ((equal? (caddr (system-type)) 'linux-gnu) 'Linux)
-       ((equal (caddr (system-type)) 'mingw32) 'MingW)
-       ((equal (cadr (system-type)) 'apple) 'MacOS)))
+       ((equal? (caddr (system-type)) 'mingw32) 'MingW)
+       ((equal? (cadr (system-type)) 'apple) 'MacOS)))
 
     (define (resolve-output-path project)
       (let ((output-path (project-ref project 'output-path)))
