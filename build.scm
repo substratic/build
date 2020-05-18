@@ -6,7 +6,8 @@
 ;; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 (define-library (substratic build)
-  (import (gambit))
+  (import (gambit)
+          (github.com/substratic engine string))
   (export gsc-command
           make-project
           test-project
@@ -186,5 +187,69 @@
                   deps-to-copy)))
 
     (define (gather-mac-dependencies project)
-      ;; TODO: Fix me
-      #f)))
+      (define (get-dependencies binary-path)
+        (let ((otool-output (shell-command (string-append "otool -L " binary-path) #t)))
+          (fold (lambda (dep deps)
+                  (if (string-starts-with? dep "\t")
+                      (let* ((dep-path (car (string-split dep #\space)))
+                             (lib-path (substring dep-path
+                                                  1
+                                                  (string-length dep-path))))
+                        (if (string-starts-with? lib-path "/usr/local/opt")
+                            (cons lib-path deps)
+                            deps))
+                      deps))
+                '()
+                (string-split (cdr otool-output) #\newline))))
+
+      (define (copy-dependency! dep-path target-path)
+        (when (file-exists? target-path)
+          (delete-file target-path))
+        (copy-file dep-path target-path)
+        (shell-command (string-append "chmod +wx " target-path)))
+
+      (define (update-dep-name! dep-path binary-path)
+        (shell-command (string-append "install_name_tool -change "
+                                      dep-path
+                                      " @rpath/"
+                                      (path-strip-directory dep-path)
+                                      " "
+                                      binary-path))
+
+        (shell-command (string-append "install_name_tool -change "
+                                      dep-path
+                                      " @rpath/"
+                                      (path-strip-directory dep-path)
+                                      " "
+                                      binary-path)))
+
+      (let* ((output-path (resolve-output-path project))
+             (exe-path (path-expand (project-ref project 'exe-name) output-path))
+             (visited (make-table)))
+
+        ;; Set the RPATH to control dylib resolution
+        (shell-command (string-append "install_name_tool -add_rpath "
+                                      "@executable_path/. "
+                                      exe-path))
+
+        (let gather-next ((deps (get-dependencies exe-path))
+                          (parent-path exe-path))
+          (when (not (null? deps))
+            (let* ((dep-path (car deps))
+                   (target-path
+                     (path-normalize (string-append output-path "/"
+                                                    (path-strip-directory dep-path)))))
+
+              ;; Always update the dependency name in the parent
+              (update-dep-name! dep-path parent-path)
+
+              ;; If the dependency hasn't been visited yet, copy it and
+              ;; its dependencies
+              (when (not (table-ref visited dep-path #f))
+                (table-set! visited dep-path #t)
+                (println "Copying dependency: " dep-path)
+                (copy-dependency! dep-path target-path)
+                (gather-next (get-dependencies target-path) target-path))
+
+              ;; Continue on with the next dependency
+              (gather-next (cdr deps) parent-path))))))))
