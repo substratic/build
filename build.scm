@@ -171,7 +171,7 @@
     (define (gather-win-dependencies project)
       (let* ((output-path (resolve-output-path project))
              (exe-path (path-expand (project-ref project 'exe-name) output-path))
-             (deps (shell-command (string-append "ldd " exe-path #t)))
+             (deps (shell-command (string-append "ldd " exe-path) #t))
              (deps-to-copy (fold (lambda (dep deps-to-copy)
                                    (let ((lib-path (caddr (string-split dep #\space))))
                                      (if (string-starts-with? lib-path "/mingw64/bin/")
