@@ -182,7 +182,7 @@
         (for-each (lambda (dep-path)
                     (println "Copying dependency: " dep-path)
                     (copy-file (path-normalize (string-append "c:/msys64" dep-path))
-                               (path-normalize (string-append output-path
+                               (path-normalize (string-append output-path "/"
                                                               (path-strip-directory dep-path)))))
                   deps-to-copy)))
 
