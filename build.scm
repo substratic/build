@@ -24,6 +24,9 @@
     (define substratic-modules
       '("github.com/substratic/sdl2"
 
+        ;; Platform dependencies
+        "_hamt"
+
         ;; Core modules
         "github.com/substratic/engine/rpc"
         "github.com/substratic/engine/loop"
