@@ -175,6 +175,8 @@
       (let* ((output-path (resolve-output-path project))
              (exe-path (path-expand (project-ref project 'exe-name) output-path))
              (deps (shell-command (string-append "ldd " exe-path) #t))
+             (sh-path (cdr (shell-command "where sh.exe" #t)))
+             (msys-path (##append-strings (reverse (cdddr (##reverse-string-split-at sh-path #\\))) "/"))
              (deps-to-copy (fold (lambda (dep deps-to-copy)
                                    (let ((lib-path (caddr (string-split dep #\space))))
                                      (if (string-starts-with? lib-path "/mingw64/bin/")
@@ -184,7 +186,7 @@
                                  (string-split (cdr deps) #\newline))))
         (for-each (lambda (dep-path)
                     (println "Copying dependency: " dep-path)
-                    (copy-file (path-normalize (string-append "c:/msys64" dep-path))
+                    (copy-file (path-normalize (string-append msys-path dep-path))
                                (path-normalize (string-append output-path "/"
                                                               (path-strip-directory dep-path)))))
                   deps-to-copy)))
