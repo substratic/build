@@ -175,7 +175,9 @@
       (let* ((output-path (resolve-output-path project))
              (exe-path (path-expand (project-ref project 'exe-name) output-path))
              (deps (shell-command (string-append "ldd " exe-path) #t))
-             (sh-path (cdr (shell-command "where sh.exe" #t)))
+             (sh-path (car (reverse (##reverse-string-split-at
+                                     (cdr (shell-command "where sh.exe" #t))
+                                     #\return))))
              (msys-path (##append-strings (reverse (cdddr (##reverse-string-split-at sh-path #\\))) "/"))
              (deps-to-copy (fold (lambda (dep deps-to-copy)
                                    (let ((lib-path (caddr (string-split dep #\space))))
